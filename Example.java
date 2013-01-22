@@ -1,7 +1,9 @@
 public class Example {
 
+	private final String xpto;
+
 	public Example(String x){
-		System.out.println(x);
+		this.xpto = x;
 	}	
 	
 	public static void main(String[] args) {
