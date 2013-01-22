@@ -10,16 +10,20 @@ import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic;
 
+import com.sun.source.tree.Tree.Kind;
 import com.sun.source.util.Trees;
 import com.sun.tools.javac.code.Flags;
+import com.sun.tools.javac.code.Flags.Flag;
 import com.sun.tools.javac.processing.JavacProcessingEnvironment;
 import com.sun.tools.javac.tree.JCTree;
 import com.sun.tools.javac.tree.JCTree.JCAnnotation;
 import com.sun.tools.javac.tree.JCTree.JCClassDecl;
 import com.sun.tools.javac.tree.JCTree.JCExpression;
+import com.sun.tools.javac.tree.JCTree.JCFieldAccess;
 import com.sun.tools.javac.tree.JCTree.JCModifiers;
 import com.sun.tools.javac.tree.JCTree.JCStatement;
 import com.sun.tools.javac.tree.JCTree.JCTypeParameter;
@@ -70,7 +74,11 @@ public class VraptorProcessor extends AbstractProcessor{
 	 * @param obj
 	 */
 	protected void print(Object obj) {
-		processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, obj.toString());
+		if(obj == null){
+			processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, "null");
+		}else{
+			processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, obj.toString());
+		}
 	}
 
 	/**
@@ -82,13 +90,53 @@ public class VraptorProcessor extends AbstractProcessor{
 	private class Inliner extends TreeTranslator{
 		
 		@Override
-		public void visitClassDef(JCClassDecl tree) {
-			super.visitClassDef(tree);
+		public void visitClassDef(JCClassDecl classDef) {
+			super.visitClassDef(classDef);
+			
+			List<JCTree> defs = List.nil();
+			
+			for (JCTree member : classDef.defs) {
+				if(isVariable(member) && hasFinal(member)){
+					print(member); 
+					removeFinal(member);
+					print(member);
+				}
+			}
 			JCTree constructor = createAConstructor();
-						
-			tree.defs = tree.defs.append(constructor);
+			classDef.defs = classDef.defs.append(constructor);
+		}
+
+		private void removeFinal(JCTree member) {
+			JCVariableDecl var = (JCVariableDecl) member;
+			JCModifiers modifiersWithoutFinal = make.Modifiers(var.mods.flags ^ 1<<4);
+			var.mods = modifiersWithoutFinal;
+		}
+
+		protected boolean isVariable(JCTree each) {
+			return each.getKind() == Kind.VARIABLE;
 		}
 		
+		private boolean hasFinal(JCTree each) {
+			JCVariableDecl var = (JCVariableDecl) each;
+			return var.getModifiers().getFlags().contains(Modifier.FINAL);
+		}
+
+//		@Override
+//		public void visitVarDef(JCVariableDecl tree) {
+//			super.visitVarDef(tree);
+//			print("vardef:");
+//			print(tree);
+//			
+//			print("VARTYPE: " + tree.vartype);
+//			print("TYPE: " + tree.type);
+//			print("MODS:" + tree.mods);
+//			print("SYM: " + tree.sym);
+//			print("SYM: " + tree.sym);
+//			print("KIND: " + tree.getKind());
+//			print("------");
+//			
+//		}
+				
 		/**
 		 * Creates a default constructor
 		 * 
