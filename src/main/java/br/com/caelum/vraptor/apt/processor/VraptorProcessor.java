@@ -58,7 +58,7 @@ public class VraptorProcessor extends AbstractProcessor{
 			for (Element each : elements) {
 				if(each.getKind() == ElementKind.CLASS){
 					JCTree tree = (JCTree) trees.getTree(each);
-					TreeTranslator visitor = new Inliner();
+					TreeTranslator visitor = new ConstructorVisitor();
 					tree.accept(visitor);
 				}
 			}
@@ -85,19 +85,15 @@ public class VraptorProcessor extends AbstractProcessor{
 	 * @author mariofts
 	 *
 	 */
-	private class Inliner extends TreeTranslator{
+	private class ConstructorVisitor extends TreeTranslator{
 		
 		@Override
 		public void visitClassDef(JCClassDecl classDef) {
 			super.visitClassDef(classDef);
-			
-			List<JCTree> defs = List.nil();
-			
+
 			for (JCTree member : classDef.defs) {
 				if(isVariable(member) && needToRemoveFinal(member)){
-					print(member); 
 					removeFinal(member);
-					print(member);
 				}
 			}
 			JCTree constructor = createAConstructor();
@@ -114,14 +110,8 @@ public class VraptorProcessor extends AbstractProcessor{
 			return each.getKind() == Kind.VARIABLE;
 		}
 		
-		private boolean needToRemoveFinal(JCTree each) {
-			JCVariableDecl var = (JCVariableDecl) each;
-			print(var);
-			print("FINAL: " + isFinal(var));
-			print("Static: " + isStatic(var));
-			print("Initialized: " + isInitialized(var));
-			
-			
+		private boolean needToRemoveFinal(JCTree member) {
+			JCVariableDecl var = (JCVariableDecl) member;
 			return ( isFinal(var) && !isStatic(var) && !isInitialized(var) );
 		}
 
