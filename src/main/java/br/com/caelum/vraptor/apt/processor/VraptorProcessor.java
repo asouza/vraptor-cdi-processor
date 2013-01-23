@@ -17,13 +17,11 @@ import javax.tools.Diagnostic;
 import com.sun.source.tree.Tree.Kind;
 import com.sun.source.util.Trees;
 import com.sun.tools.javac.code.Flags;
-import com.sun.tools.javac.code.Flags.Flag;
 import com.sun.tools.javac.processing.JavacProcessingEnvironment;
 import com.sun.tools.javac.tree.JCTree;
 import com.sun.tools.javac.tree.JCTree.JCAnnotation;
 import com.sun.tools.javac.tree.JCTree.JCClassDecl;
 import com.sun.tools.javac.tree.JCTree.JCExpression;
-import com.sun.tools.javac.tree.JCTree.JCFieldAccess;
 import com.sun.tools.javac.tree.JCTree.JCModifiers;
 import com.sun.tools.javac.tree.JCTree.JCStatement;
 import com.sun.tools.javac.tree.JCTree.JCTypeParameter;
@@ -96,7 +94,7 @@ public class VraptorProcessor extends AbstractProcessor{
 			List<JCTree> defs = List.nil();
 			
 			for (JCTree member : classDef.defs) {
-				if(isVariable(member) && hasFinal(member)){
+				if(isVariable(member) && needToRemoveFinal(member)){
 					print(member); 
 					removeFinal(member);
 					print(member);
@@ -108,7 +106,7 @@ public class VraptorProcessor extends AbstractProcessor{
 
 		private void removeFinal(JCTree member) {
 			JCVariableDecl var = (JCVariableDecl) member;
-			JCModifiers modifiersWithoutFinal = make.Modifiers(var.mods.flags ^ 1<<4);
+			JCModifiers modifiersWithoutFinal = make.Modifiers(var.mods.flags ^ Flags.FINAL);
 			var.mods = modifiersWithoutFinal;
 		}
 
@@ -116,27 +114,29 @@ public class VraptorProcessor extends AbstractProcessor{
 			return each.getKind() == Kind.VARIABLE;
 		}
 		
-		private boolean hasFinal(JCTree each) {
+		private boolean needToRemoveFinal(JCTree each) {
 			JCVariableDecl var = (JCVariableDecl) each;
-			return var.getModifiers().getFlags().contains(Modifier.FINAL);
+			print(var);
+			print("FINAL: " + isFinal(var));
+			print("Static: " + isStatic(var));
+			print("Initialized: " + isInitialized(var));
+			
+			
+			return ( isFinal(var) && !isStatic(var) && !isInitialized(var) );
 		}
 
-//		@Override
-//		public void visitVarDef(JCVariableDecl tree) {
-//			super.visitVarDef(tree);
-//			print("vardef:");
-//			print(tree);
-//			
-//			print("VARTYPE: " + tree.vartype);
-//			print("TYPE: " + tree.type);
-//			print("MODS:" + tree.mods);
-//			print("SYM: " + tree.sym);
-//			print("SYM: " + tree.sym);
-//			print("KIND: " + tree.getKind());
-//			print("------");
-//			
-//		}
+		protected boolean isFinal(JCVariableDecl var) {
+			return var.getModifiers().getFlags().contains(Modifier.FINAL);
+		}
 				
+		private boolean isStatic(JCVariableDecl var) {
+			return (var.mods.flags & Flags.STATIC) != 0;
+		}
+
+		public boolean isInitialized(JCVariableDecl var) {
+			return var.init != null;
+		}
+
 		/**
 		 * Creates a default constructor
 		 * 
@@ -152,5 +152,6 @@ public class VraptorProcessor extends AbstractProcessor{
 						   
 		}
 	}
+
 
 }

@@ -2,7 +2,7 @@
 public class Example {
 
 	private final static String xpto1 = "xxx";
-	private final static String xpto;
+	private final String xpto;
 	private String chuchuzinho;
 
 	public Example(String x){
