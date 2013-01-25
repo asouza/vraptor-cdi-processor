@@ -1,9 +1,12 @@
-//@lombok.NoArgsConstructor
+
 public class Example {
 
-//	private final static String xpto1 = "xxx";
-//	private final	 String xpto;
+	private final String xpto1;
 	private String chuchuzinho;
+
+	public Example(String c){
+		this.xpto1 = c;
+	}
 
 	public void someMethod(final String oioioi){
 		final int blabla = 0;
@@ -11,29 +14,14 @@ public class Example {
 	
 	public static void main(String[] args) {
 
-		Abstrata ab = new Abstrata("xpto"){
-			public void metodoAbs(){
-				System.out.println("ooo");
-			}
-		};
-		
 	}
 
 	public class Teste{
 
+		public Teste(String r){}
+
 		public void metodo(){}
 
 	}
-
-}
-
-abstract class Abstrata{
-
-	public Abstrata(String h){
-
-	}
-
-	public abstract void metodoAbs();
-
 
 }
