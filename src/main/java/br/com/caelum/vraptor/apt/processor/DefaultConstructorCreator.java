@@ -26,12 +26,12 @@ import com.sun.tools.javac.util.Names;
  * @author mariofts
  * 
  */
-public class ConstructorVisitor extends TreeTranslator {
+public class DefaultConstructorCreator extends TreeTranslator {
 
 	private TreeMaker maker;
 	private Names names;
 
-	public ConstructorVisitor(ProcessingEnvironment processingEnv) {
+	public DefaultConstructorCreator(ProcessingEnvironment processingEnv) {
 		Context context = ((JavacProcessingEnvironment) processingEnv)
 				.getContext();
 		maker = TreeMaker.instance(context);
