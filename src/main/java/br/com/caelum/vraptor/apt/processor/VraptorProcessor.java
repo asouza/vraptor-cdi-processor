@@ -5,7 +5,6 @@ import java.util.Set;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.ProcessingEnvironment;
-import javax.annotation.processing.Processor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.annotation.processing.SupportedSourceVersion;
@@ -18,27 +17,25 @@ import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.TypeVisitor;
 import javax.lang.model.util.SimpleTypeVisitor6;
-import javax.tools.Diagnostic;
 
 import com.sun.source.util.Trees;
 import com.sun.tools.javac.tree.JCTree;
 
 @SupportedAnnotationTypes("br.com.caelum.vraptor.*")
-//@SupportedAnnotationTypes("*")
 @SupportedSourceVersion(SourceVersion.RELEASE_7)
 public class VraptorProcessor extends AbstractProcessor {
 
 	private Trees trees;
-	private DefaultConstructorCreator defaultConstructorCreator;
-	private ConstructorAnnotation constructorAnnotation;
+	private DefaultConstructorAdder defaultConstructorCreator;
+	private AnnotationAdder constructorAnnotation;
 	private Set<Element> processedElements = new HashSet<Element>();
 
 	@Override
 	public synchronized void init(ProcessingEnvironment processingEnv) {
 		super.init(processingEnv);
 		trees = Trees.instance(processingEnv);
-		defaultConstructorCreator = new DefaultConstructorCreator(processingEnv);
-		constructorAnnotation = new ConstructorAnnotation(processingEnv);
+		defaultConstructorCreator = new DefaultConstructorAdder(processingEnv);
+		constructorAnnotation = new AnnotationAdder(processingEnv);
 	}
 
 	@Override
@@ -48,7 +45,6 @@ public class VraptorProcessor extends AbstractProcessor {
 		if (!roundEnv.processingOver()) {
 			System.out.println("Processing Annotations: " + annotations);
 			System.out.println();
-			
 			
 			for (TypeElement typeElement : annotations) {
 				System.out.println("Processing: " + typeElement);
@@ -101,20 +97,5 @@ public class VraptorProcessor extends AbstractProcessor {
 			return t.getParameterTypes().isEmpty();
 		}
 	};
-
-	/**
-	 * Prints the content of a object as a note
-	 * 
-	 * @param obj
-	 */
-	protected void print(Object obj) {
-		if (obj == null) {
-			processingEnv.getMessager().printMessage(Diagnostic.Kind.MANDATORY_WARNING,
-					"null");
-		} else {
-			processingEnv.getMessager().printMessage(Diagnostic.Kind.MANDATORY_WARNING,
-					obj.toString());
-		}
-	}
 
 }
