@@ -18,24 +18,18 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.TypeVisitor;
 import javax.lang.model.util.SimpleTypeVisitor6;
 
-import com.sun.source.util.Trees;
-import com.sun.tools.javac.tree.JCTree;
 
 @SupportedAnnotationTypes("br.com.caelum.vraptor.*")
 @SupportedSourceVersion(SourceVersion.RELEASE_7)
 public class VraptorProcessor extends AbstractProcessor {
 
-	private Trees trees;
-	private DefaultConstructorAdder defaultConstructorCreator;
-	private AnnotationAdder constructorAnnotation;
 	private Set<Element> processedElements = new HashSet<Element>();
+	private JavacCompiler compiler;
 
 	@Override
 	public synchronized void init(ProcessingEnvironment processingEnv) {
-		super.init(processingEnv);
-		trees = Trees.instance(processingEnv);
-		defaultConstructorCreator = new DefaultConstructorAdder(processingEnv);
-		constructorAnnotation = new AnnotationAdder(processingEnv);
+		super.init(processingEnv);		
+		compiler = new JavacCompiler(processingEnv);
 	}
 
 	@Override
@@ -49,7 +43,6 @@ public class VraptorProcessor extends AbstractProcessor {
 			for (TypeElement typeElement : annotations) {
 				System.out.println("Processing: " + typeElement);
 				Set<? extends Element> elements = roundEnv.getElementsAnnotatedWith(typeElement);				
-//				Set<? extends Element> elements = roundEnv.getRootElements();				
 				System.out.println("Processing Elements: " + elements);
 				System.out.println();
 				for (Element element : elements) {
@@ -65,12 +58,11 @@ public class VraptorProcessor extends AbstractProcessor {
 
 	protected void processClass(Element element) {		
 		if(!processedElements.contains(element)){
-			JCTree tree = (JCTree) trees.getTree(element);
-			tree.accept(constructorAnnotation);
+			compiler.addDIAnnotations(element);
 			
 			if (!haveADefaultContructor(element)) {
 				System.out.println("Adding constructor to class " + element.getSimpleName());
-				tree.accept(defaultConstructorCreator);
+				compiler.addDefaultConstructor(element);
 				processedElements.add(element);
 			}
 		}
