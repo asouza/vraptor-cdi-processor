@@ -46,8 +46,11 @@ public class VraptorProcessor extends AbstractProcessor {
 				System.out.println("Processing Elements: " + elements);
 				System.out.println();
 				for (Element element : elements) {
-					if (element.getKind() == ElementKind.CLASS && !element.getSimpleName().toString().contains("$")
-							&& !element.getModifiers().contains(Modifier.STATIC)) {
+					if ( element.getKind() == ElementKind.CLASS && 
+						!element.getSimpleName().toString().contains("$") && 
+						!element.getModifiers().contains(Modifier.STATIC) &&
+						!element.getModifiers().contains(Modifier.PRIVATE)
+							) {
 						processClass(element);
 					}
 				}
@@ -64,7 +67,12 @@ public class VraptorProcessor extends AbstractProcessor {
 				System.out.println("Adding constructor to class " + element.getSimpleName());
 				compiler.addDefaultConstructor(element);
 				processedElements.add(element);
+			}else{
+				System.out.println("Already have a default constructor: " + element.getSimpleName());
 			}
+			
+		}else{
+			System.out.println("Already processed : " + element.getSimpleName());
 		}
 	}
 

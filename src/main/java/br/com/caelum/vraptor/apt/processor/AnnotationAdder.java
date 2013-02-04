@@ -32,14 +32,12 @@ public class AnnotationAdder extends TreeTranslator {
 		if (method.getName().contentEquals("<init>")
 				&& !method.getParameters().isEmpty()) {
 			
-			System.out.println("OLD " + method);
-			
 			boolean containsInject = false;
 			boolean containsAutowired = false;
 			
 			for (JCAnnotation jcAnnotation : method.mods.annotations) {
-				System.out.println("annotationType: " + jcAnnotation.annotationType);
-				System.out.println("type: " + jcAnnotation.type);
+//				System.out.println("annotationType: " + jcAnnotation.annotationType);
+//				System.out.println("type: " + jcAnnotation.type);
 				
 				if(jcAnnotation.annotationType.toString().endsWith("Inject"))
 					containsInject = true;
