@@ -18,7 +18,7 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.TypeVisitor;
 import javax.lang.model.util.SimpleTypeVisitor6;
 
-import br.com.caelum.vraptor.apt.javac.TheCompiler;
+import br.com.caelum.vraptor.apt.TheCompiler;
 import br.com.caelum.vraptor.apt.javac.JavacCompiler;
 
 

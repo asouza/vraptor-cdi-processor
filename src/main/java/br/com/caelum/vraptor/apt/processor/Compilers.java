@@ -4,8 +4,8 @@ import javax.annotation.processing.ProcessingEnvironment;
 
 import com.sun.tools.javac.processing.JavacProcessingEnvironment;
 
+import br.com.caelum.vraptor.apt.TheCompiler;
 import br.com.caelum.vraptor.apt.javac.JavacCompiler;
-import br.com.caelum.vraptor.apt.javac.TheCompiler;
 
 public class Compilers {
 
