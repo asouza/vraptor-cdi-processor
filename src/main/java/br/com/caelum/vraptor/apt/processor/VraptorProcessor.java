@@ -18,18 +18,21 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.TypeVisitor;
 import javax.lang.model.util.SimpleTypeVisitor6;
 
+import br.com.caelum.vraptor.apt.javac.TheCompiler;
+import br.com.caelum.vraptor.apt.javac.JavacCompiler;
+
 
 @SupportedAnnotationTypes("br.com.caelum.vraptor.*")
 @SupportedSourceVersion(SourceVersion.RELEASE_7)
 public class VraptorProcessor extends AbstractProcessor {
 
 	private Set<Element> processedElements = new HashSet<Element>();
-	private JavacCompiler compiler;
+	private TheCompiler compiler;
 
 	@Override
 	public synchronized void init(ProcessingEnvironment processingEnv) {
-		super.init(processingEnv);		
-		compiler = new JavacCompiler(processingEnv);
+		super.init(processingEnv);
+		compiler = Compilers.getCompilerFor(processingEnv);;
 	}
 
 	@Override
@@ -37,14 +40,14 @@ public class VraptorProcessor extends AbstractProcessor {
 		
 
 		if (!roundEnv.processingOver()) {
-			System.out.println("Processing Annotations: " + annotations);
-			System.out.println();
+//			System.out.println("Processing Annotations: " + annotations);
+//			System.out.println();
 			
 			for (TypeElement typeElement : annotations) {
-				System.out.println("Processing: " + typeElement);
+//				System.out.println("Processing: " + typeElement);
 				Set<? extends Element> elements = roundEnv.getElementsAnnotatedWith(typeElement);				
-				System.out.println("Processing Elements: " + elements);
-				System.out.println();
+//				System.out.println("Processing Elements: " + elements);
+//				System.out.println();
 				for (Element element : elements) {
 					if ( element.getKind() == ElementKind.CLASS && 
 						!element.getSimpleName().toString().contains("$") && 
@@ -64,7 +67,7 @@ public class VraptorProcessor extends AbstractProcessor {
 			compiler.addDIAnnotations(element);
 			
 			if (!haveADefaultContructor(element)) {
-				System.out.println("Adding constructor to class " + element.getSimpleName());
+//				System.out.println("Adding constructor to class " + element.getSimpleName());
 				compiler.addDefaultConstructor(element);
 				processedElements.add(element);
 			}else{
@@ -81,14 +84,14 @@ public class VraptorProcessor extends AbstractProcessor {
 
 		for (Element subelement : element.getEnclosedElements()) {
 			if (subelement.getKind() == ElementKind.CONSTRUCTOR ) {
-				System.out.println("Constructor found: " + subelement);
+//				System.out.println("Constructor found: " + subelement);
 				constructorsCount++;
 				TypeMirror mirror = subelement.asType();
 				if (mirror.accept(noArgsVisitor, null))
 					return true;
 			}
 		}
-		System.out.println("constructors found for " + element.getSimpleName() + " [" + constructorsCount + "]");
+//		System.out.println("constructors found for " + element.getSimpleName() + " [" + constructorsCount + "]");
 		return constructorsCount == 0;
 	}
 
