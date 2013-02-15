@@ -19,9 +19,9 @@ import javax.lang.model.type.TypeVisitor;
 import javax.lang.model.util.SimpleTypeVisitor6;
 
 import br.com.caelum.vraptor.apt.TheCompiler;
-import br.com.caelum.vraptor.apt.javac.JavacCompiler;
 
 
+@SuppressWarnings("restriction")
 @SupportedAnnotationTypes("br.com.caelum.vraptor.*")
 @SupportedSourceVersion(SourceVersion.RELEASE_7)
 public class VraptorProcessor extends AbstractProcessor {

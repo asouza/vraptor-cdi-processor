@@ -12,7 +12,9 @@ Export-Package: br.com.caelum.vraptor.apt;uses:="javax.lang.model.element",
    br.com.caelum.vraptor.apt,
    javax.annotation.processing"
 Require-Bundle: org.eclipse.core.runtime;bundle-version="3.8.0",
- org.eclipse.jdt.apt.core;bundle-version="3.3.500"
+ org.eclipse.jdt.apt.core;bundle-version="3.3.500",
+ org.eclipse.jdt.apt.pluggable.core;bundle-version="1.0.400",
+ org.eclipse.jdt.core;bundle-version="3.8.2"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: J2SE-1.5,
  JavaSE-1.6,
